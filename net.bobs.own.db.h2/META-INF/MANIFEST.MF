@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: h2dblib
 Bundle-SymbolicName: net.bobs.own.db.h2
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Activator: net.bobs.own.db.h2.Activator
 Require-Bundle: org.eclipse.core.runtime,
  net.bobs.own.ezmenu.log4j2;bundle-version="1.0.1",
