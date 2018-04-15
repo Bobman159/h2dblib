@@ -22,6 +22,8 @@
  */
 package net.bobs.own.db.h2.pool;
 
+import java.sql.Clob;
+
 import net.bobs.own.db.h2.db.H2AbstractDatabaseService;
 
 /**
@@ -37,7 +39,6 @@ public class H2Database extends H2AbstractDatabaseService {
 	public H2Database(IH2ConnectionPool pool) {
 	   super(pool);
 	}
-
 
 //	@Override
 //	public IH2ConnectionPool getPool(String poolId) {

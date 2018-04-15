@@ -95,6 +95,17 @@ import net.bobs.own.db.h2.resources.Messages;
 			initConnectionPool();
 			
 		}
+		
+		public H2MyOwnConnectionPool(Properties dbProps) {
+	       prefs = new H2ConnectionPoolPreferences(dbProps);
+	       try {
+            logger.debug(Messages.bind(Messages.H2InitPool_Message,"properties",
+                          prefs.getdbPath()));
+         } catch (NoPreferenceException npex) {
+            logger.error(npex.getMessage(), npex);
+         }
+	       initConnectionPool();
+		}
       
 		/**
 		 * Obtains an available connection from the pool and marks it as in use. 
@@ -110,7 +121,7 @@ import net.bobs.own.db.h2.resources.Messages;
 					
 			if (available_connections.size () == 0) {
 				try {
-				conn = createConnections();
+				   conn = createConnections();
 				} catch (NoPreferenceException npex) {
 					//Only log the error since the preference specifications is the responsibility of the developer
 					logger.debug(npex.getMessage(), npex);
@@ -292,15 +303,16 @@ import net.bobs.own.db.h2.resources.Messages;
 			Object[] parms = new Object[] {prefs.getdbPath(),prefs.getdbUser(),prefs.getdbPassword()};
 			
 			try {
-				Class.forName(DRIVER_NAME);
-				if (prefs.getdbPassword() != null) {
-					//TODO: Develop a way to specify ";IFEXISTS=TRUE" when needed or leave it off when not needed
-					//Possibly use a H2ConnectStringBuilder class to build/specify different options?
-					//Use Interface IConnectStringHook to be called when specified by user....
-					url = Messages.bind(Messages.h2database_jdbc_url, parms);
-				} else {
-					url = Messages.bind(Messages.h2database_jdbc_url_nopass,parms[0],parms[1]);
-				}
+				   Class.forName(DRIVER_NAME);
+				   if (prefs.getdbPassword() != null) {
+				      //TODO: Develop a way to specify ";IFEXISTS=TRUE" when needed or leave it off when not needed
+				      //Possibly use a H2ConnectStringBuilder class to build/specify different options?
+				      //Use Interface IConnectStringHook to be called when specified by user....
+				      url = Messages.bind(Messages.h2database_jdbc_url, parms);
+				   } else {
+				      url = Messages.bind(Messages.h2database_jdbc_url_nopass,parms[0],parms[1]);
+				   }
+				   logger.debug("create connection with url=" + url);
 					conn = DriverManager.getConnection(url);
 					logger.debug("Connection with url " + url + " created.");
 		        } catch (ClassNotFoundException cex) {

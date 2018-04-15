@@ -1,5 +1,7 @@
 package net.bobs.own.db.h2.tests;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -43,12 +45,18 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
    /* EZMenu */
    //URL Test - I can only test with file URL because platform:/ is specific to Eclipse
    //Test with platform:/ URL should receive malformed URL exception -> "Unknown protocol platform:\ or similar 
-   static final String MYOWN_PATH_URL="file:/D:\\gitRepository\\H2DbLib\\tests_config\\cp_testb_myown.properties";
-   //final String MYOWN_PATH_URL="platform:/plugin/net.bobs.own.db.h2.tests/tests_config/cp_testb.properties";
-   static final String HIKARI_PATH_URL="D:\\gitRepository\\H2DbLib\\tests_config\\cp_testb_hikari.properties";
-  
-   static final String MYOWN_PATH_FILE="D:\\gitRepository\\H2DbLib\\tests_config\\cp_testb_myown.properties";
-   static final String HIKARI_PATH_FILE="/gitRepository/H2DbLib/tests_config/cp_testb_hikari.properties";
+    static final String MYOWN_PATH_FILE_URL="file:/C:\\Users\\Robert Anderson\\git\\h2dblib\\net.bobs.own.db.h2\\tests_config" +
+                                        "\\cp_testb_myown.properties";
+    static final String MYOWN_PATH_URL="/Users/Robert Anderson/git/h2dblib/net.bobs.own.db.h2/tests_config/" + 
+                                       "/cp_testb_myown.properties";
+    static final String MYOWN_PATH_FILE="C:\\Users\\Robert Anderson\\git\\h2dblib\\net.bobs.own.db.h2\\tests_config" +
+                                        "\\cp_testb_myown.properties";
+    //final String MYOWN_PATH_URL="platform:/plugin/net.bobs.own.db.h2.tests/tests_config/cp_testb.properties";
+    
+    
+    static final String HIKARI_PATH_URL="/Users/Robert Anderson/git/h2dblib/net.bobs.own.db.h2/tests_config/cp_testb_hikari.properties";
+    static final String HIKARI_PATH_FILE="C:\\Users\\Robert Anderson\\git\\h2dblib\\net.bobs.own.db.h2\\tests_config\\" +
+                                          "cp_testb_hikari.properties";
    
    private static Logger logger = LogManager.getLogger(ConnectionPoolJUnit.class.getName());
   
@@ -73,7 +81,7 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
 
       IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
                                                        .makePool(H2ConnectionPoolFactory.PoolTypes.MYOWN, 
-                                                                 "cptestb.myown",MYOWN_PATH_URL);
+                                                                 "cptestb.myown",MYOWN_PATH_FILE_URL);
       
       IH2ConnectionPool pool2 = H2ConnectionPoolFactory.getInstance()
             .makePool(H2ConnectionPoolFactory.PoolTypes.MYOWN, 
@@ -132,13 +140,59 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
          logger.error(sqlex.getMessage(), sqlex);
       }
    }
+   
+   @Test
+   void myownConfigurationTest() {
+      IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
+            .makePool(H2ConnectionPoolFactory.PoolTypes.MYOWN,
+                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testb.h2", 
+                      "sa", null, "5", "cptestb.myown");
+
+//      create user testbUser password 'Abcd1234';
+      IH2ConnectionPool pool2 = H2ConnectionPoolFactory.getInstance()
+            .makePool(H2ConnectionPoolFactory.PoolTypes.MYOWN, 
+                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testb.h2.db", 
+                      "testbUser", "Abcd1234", "10", "cptestb2.myown");
+      
+      try {
+      Connection connPool = pool.getConnection();
+      Connection connPoola = pool.getConnection();
+      Assertions.assertNotNull(connPool,"connPool connection is NULL");
+      Assertions.assertNotNull(connPoola,"connPoola connection is NULL");
+      pool.closeConnection(connPool);
+      pool.closeConnection(connPoola);
+      pool.close();
+      
+      Connection connPool2 = pool2.getConnection();
+      Assertions.assertNotNull(connPool2,"connPool2 connection is NULL");
+      Connection connPool2a = pool2.getConnection();
+      Assertions.assertNotNull(connPool2a,"connPool2a connection is NULL");
+      pool2.closeConnection(connPool2);
+      pool2.closeConnection(connPool2a);
+      pool2.close();
+      } catch (SQLException sqlex) {
+      logger.error(sqlex.getMessage(), sqlex);
+      }
+      
+   }
   
    @Test
    void hikaricpURLTest() {
 
+//      System.out.println(new File("../../../ggla/samples/obj/linux_x86")
+//            .getCanonicalPath());
+      
+      try {
+         logger.debug("canonicalPath= " + new File("/Users/Robert Anderson/git/h2dblib/net.bobs.own.db.h2/tests_config/cp_testb_hikari.properties")
+                                                  .getCanonicalPath());
+      } catch (IOException ioex) {
+         logger.debug(ioex.getMessage(), ioex);
+      }
       IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
-                                                       .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP, 
-                                                                 "cptestb.hikari",HIKARI_PATH_URL);
+                        .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP, 
+                                  "cptestb.hikari",
+//                                HIKARI_PATH_URL);
+                                  "/Users/Robert Anderson/git/h2dblib/net.bobs.own.db.h2/tests_config/cp_testb_hikari.properties");
       
       IH2ConnectionPool pool2 = H2ConnectionPoolFactory.getInstance()
                                                        .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP, 
@@ -170,7 +224,8 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
 
       IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
                                                        .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP, 
-                                                                 "cptestb.hikari",HIKARI_PATH_FILE);
+                                                                 "cptestb.hikari",
+                                                                 HIKARI_PATH_FILE);
       
       IH2ConnectionPool pool2 = H2ConnectionPoolFactory.getInstance()
                                                        .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP, 
@@ -195,6 +250,41 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
       } catch (SQLException sqlex) {
          logger.error(sqlex.getMessage(), sqlex);
       }
+   }
+   
+   @Test
+   void hikaricpConfigurationTest() {
+      IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
+            .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP,
+                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testb.h2.db", 
+                      "sa", null, "10", "cptestb.hikari");
+
+//      create user testbUser password 'Abcd1234';
+      IH2ConnectionPool pool2 = H2ConnectionPoolFactory.getInstance()
+            .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP, 
+                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testb.h2.db", 
+                      "testbUser", "Abcd1234", "10", "cptestb2.hikari");
+      
+      try {
+      Connection connPool = pool.getConnection();
+      Connection connPoola = pool.getConnection();
+      Assertions.assertNotNull(connPool,"connPool connection is NULL");
+      Assertions.assertNotNull(connPoola,"connPoola connection is NULL");
+      pool.closeConnection(connPool);
+      pool.closeConnection(connPoola);
+      pool.close();
+      
+      Connection connPool2 = pool2.getConnection();
+      Assertions.assertNotNull(connPool2,"connPool2 connection is NULL");
+      Connection connPool2a = pool2.getConnection();
+      Assertions.assertNotNull(connPool2a,"connPool2a connection is NULL");
+      pool2.closeConnection(connPool2);
+      pool2.closeConnection(connPool2a);
+      pool2.close();
+      } catch (SQLException sqlex) {
+      logger.error(sqlex.getMessage(), sqlex);
+      }
+      
    }
    
 

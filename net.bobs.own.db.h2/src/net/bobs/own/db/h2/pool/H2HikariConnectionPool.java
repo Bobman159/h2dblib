@@ -40,11 +40,11 @@ import net.bobs.own.db.h2.resources.Messages;
 	 * 
 	 * @param prop - properties of object of HikariCP configuration information
 	 */
-//	public H2HikariConnectionPool(Properties prop) {
-//		
-//		HikariConfig config = new HikariConfig(prop);
-//		ds = new HikariDataSource(config);
-//	}
+	public H2HikariConnectionPool(Properties prop) {
+		
+		HikariConfig config = new HikariConfig(prop);
+		ds = new HikariDataSource(config);
+	}
 	
 	/**
 	 * Creates a connection pool for the specified database path, user id 
