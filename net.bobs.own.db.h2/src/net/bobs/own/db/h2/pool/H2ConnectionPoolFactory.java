@@ -32,6 +32,8 @@ public class H2ConnectionPoolFactory {
 	
 	/**
 	 * Define a connection pool using the specified information for configuration. 
+	 * <b>Do not specify the file extension <code>.h2.db</code> for the dbPath parameter.</b>
+	 * It will result in database not found messages in h2 1.3.176.
 	 * 
 	 * @param type - type of pool HIKARICP or MYOWN
 	 * @param dbPath - full path to the specified H2 database 

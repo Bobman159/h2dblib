@@ -32,7 +32,7 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
  * @author Robert Anderson
  *
  */
- public class ConnectionPoolJUnit {
+ public class ConnectionPoolTests {
    
    //TODO: Create additional JUnit tests to improve code coverage 
    //    *  net.bobs.own.db.h2.db
@@ -46,19 +46,18 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
    //URL Test - I can only test with file URL because platform:/ is specific to Eclipse
    //Test with platform:/ URL should receive malformed URL exception -> "Unknown protocol platform:\ or similar 
     static final String MYOWN_PATH_FILE_URL="file:/C:\\Users\\Robert Anderson\\git\\h2dblib\\net.bobs.own.db.h2\\tests_config" +
-                                        "\\cp_testb_myown.properties";
+                                            "\\cp_testb_myown.properties";
     static final String MYOWN_PATH_URL="/Users/Robert Anderson/git/h2dblib/net.bobs.own.db.h2/tests_config/" + 
                                        "/cp_testb_myown.properties";
     static final String MYOWN_PATH_FILE="C:\\Users\\Robert Anderson\\git\\h2dblib\\net.bobs.own.db.h2\\tests_config" +
                                         "\\cp_testb_myown.properties";
     //final String MYOWN_PATH_URL="platform:/plugin/net.bobs.own.db.h2.tests/tests_config/cp_testb.properties";
-    
-    
+
     static final String HIKARI_PATH_URL="/Users/Robert Anderson/git/h2dblib/net.bobs.own.db.h2/tests_config/cp_testb_hikari.properties";
     static final String HIKARI_PATH_FILE="C:\\Users\\Robert Anderson\\git\\h2dblib\\net.bobs.own.db.h2\\tests_config\\" +
                                           "cp_testb_hikari.properties";
    
-   private static Logger logger = LogManager.getLogger(ConnectionPoolJUnit.class.getName());
+   private static Logger logger = LogManager.getLogger(ConnectionPoolTests.class.getName());
   
    @BeforeAll
    static void setUpBeforeClass() throws Exception {
@@ -79,6 +78,7 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
    @Test
    void myownURLTest() {
 
+      logger.debug("myownURLTest started");
       IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
                                                        .makePool(H2ConnectionPoolFactory.PoolTypes.MYOWN, 
                                                                  "cptestb.myown",MYOWN_PATH_FILE_URL);
@@ -112,6 +112,7 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
    @Test
    void myownPropertiesFileTest() {
 
+      logger.debug("myownPropertiesFileTest started");
       IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
                                                        .makePool(H2ConnectionPoolFactory.PoolTypes.MYOWN, 
                                                                  "cptestb.myown",MYOWN_PATH_FILE);
@@ -143,15 +144,16 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
    
    @Test
    void myownConfigurationTest() {
+      logger.debug("myownConfigurationTest started");
       IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
             .makePool(H2ConnectionPoolFactory.PoolTypes.MYOWN,
-                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testb.h2", 
+                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testa", 
                       "sa", null, "5", "cptestb.myown");
 
 //      create user testbUser password 'Abcd1234';
       IH2ConnectionPool pool2 = H2ConnectionPoolFactory.getInstance()
             .makePool(H2ConnectionPoolFactory.PoolTypes.MYOWN, 
-                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testb.h2.db", 
+                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testb", 
                       "testbUser", "Abcd1234", "10", "cptestb2.myown");
       
       try {
@@ -182,12 +184,7 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
 //      System.out.println(new File("../../../ggla/samples/obj/linux_x86")
 //            .getCanonicalPath());
       
-      try {
-         logger.debug("canonicalPath= " + new File("/Users/Robert Anderson/git/h2dblib/net.bobs.own.db.h2/tests_config/cp_testb_hikari.properties")
-                                                  .getCanonicalPath());
-      } catch (IOException ioex) {
-         logger.debug(ioex.getMessage(), ioex);
-      }
+      logger.debug("hikaricpURLTest started");
       IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
                         .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP, 
                                   "cptestb.hikari",
@@ -222,6 +219,7 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
    @Test
    void hikaricpPropertiesFileTest() {
 
+      logger.debug("hikaricpPropertiesFileTest started");
       IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
                                                        .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP, 
                                                                  "cptestb.hikari",
@@ -254,15 +252,16 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
    
    @Test
    void hikaricpConfigurationTest() {
+      
+      logger.debug("hikaricpConfigurationTest started");
       IH2ConnectionPool pool = H2ConnectionPoolFactory.getInstance()
             .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP,
-                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testb.h2.db", 
+                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testa", 
                       "sa", null, "10", "cptestb.hikari");
 
-//      create user testbUser password 'Abcd1234';
       IH2ConnectionPool pool2 = H2ConnectionPoolFactory.getInstance()
             .makePool(H2ConnectionPoolFactory.PoolTypes.HIKARICP, 
-                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testb.h2.db", 
+                      "D:\\Java\\EzMenu_Workspace\\net.bobs.own.db.h2\\db\\testb", 
                       "testbUser", "Abcd1234", "10", "cptestb2.hikari");
       
       try {
