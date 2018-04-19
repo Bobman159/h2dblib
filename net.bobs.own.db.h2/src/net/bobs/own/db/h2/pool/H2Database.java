@@ -22,8 +22,6 @@
  */
 package net.bobs.own.db.h2.pool;
 
-import java.sql.Clob;
-
 import net.bobs.own.db.h2.db.H2AbstractDatabaseService;
 
 /**
