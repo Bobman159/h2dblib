@@ -283,7 +283,7 @@ public abstract class H2AbstractDatabaseService {
 	   if (prep.isClosed() == false) {
 	      prep.close();
 	   }
-	   pool.closeConnection(conn);
+	   pool.releaseConnection(conn);
 	}
 
 	/**

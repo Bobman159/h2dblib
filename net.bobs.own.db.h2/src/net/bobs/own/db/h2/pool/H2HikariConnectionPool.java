@@ -18,6 +18,7 @@ import net.bobs.own.db.h2.resources.Messages;
 		
 	private Logger logger = LogManager.getLogger(H2HikariConnectionPool.class);
 	private HikariDataSource ds;
+	private String poolId = null;
 
 	/**
 	 * Creates a HikariCP backed connection pool using a properties file. 
@@ -25,7 +26,7 @@ import net.bobs.own.db.h2.resources.Messages;
 	 * @param prefKey - identifier for the database preferences to use
 	 */
 
-	public H2HikariConnectionPool(String path)  {
+	public H2HikariConnectionPool(String path,String poolId)  {
 		
 		logger.debug(Messages.bind(Messages.HikariInitPool_Message, "properties file", path));
 		String config_path = path;
@@ -33,6 +34,7 @@ import net.bobs.own.db.h2.resources.Messages;
 		HikariConfig config = null;
 		config = new HikariConfig(config_path);
 		ds = new HikariDataSource(config);
+		this.poolId = poolId;
 	}
 	
 	/**
@@ -40,10 +42,11 @@ import net.bobs.own.db.h2.resources.Messages;
 	 * 
 	 * @param prop - properties of object of HikariCP configuration information
 	 */
-	public H2HikariConnectionPool(Properties prop) {
+	public H2HikariConnectionPool(Properties prop,String poolId) {
 		
 		HikariConfig config = new HikariConfig(prop);
 		ds = new HikariDataSource(config);
+		this.poolId = poolId;
 	}
 	
 	/**
@@ -61,14 +64,14 @@ import net.bobs.own.db.h2.resources.Messages;
 	public Connection getConnection() throws SQLException {
 
 		Connection conn = null;
-		final String DEBUG_STATUS="Get connection total= {0} active= {1} idle= {2}";
+		final String DEBUG_STATUS="PoolId {0} get connection total= {2} active= {2} idle= {3}";
 		String dbgOut = " ";
 		
 		try {			
 			conn = ds.getConnection();
 			HikariPoolMXBean bean = ds.getHikariPoolMXBean();
-			dbgOut = MessageFormat.format(DEBUG_STATUS,bean.getTotalConnections(),
-					bean.getActiveConnections(),bean.getIdleConnections());			
+			dbgOut = MessageFormat.format(DEBUG_STATUS,poolId, bean.getTotalConnections(),
+					                        bean.getActiveConnections(),bean.getIdleConnections());			
 			logger.debug(dbgOut);
 		}
 		catch (SQLException sqlex) {
@@ -90,15 +93,15 @@ import net.bobs.own.db.h2.resources.Messages;
 	 * @param conn - the <code>Connection</code> to be returned
 	 */
 	@Override
-	public synchronized void closeConnection(Connection conn) throws SQLException {
+	public synchronized void releaseConnection(Connection conn) throws SQLException {
 		
-		final String DEBUG_STATUS="Close connection total= {0} active= {1} idle= {2}";
+		final String DEBUG_STATUS="PoolId {0} close connection total= {1} active= {2} idle= {3}";
 		String dbgOut = " ";
 		
 		conn.close();
 		HikariPoolMXBean bean = ds.getHikariPoolMXBean();
-		dbgOut = MessageFormat.format(DEBUG_STATUS,bean.getTotalConnections(),
-				bean.getActiveConnections(),bean.getIdleConnections());			
+		dbgOut = MessageFormat.format(DEBUG_STATUS,poolId,bean.getTotalConnections(),
+				                        bean.getActiveConnections(),bean.getIdleConnections());			
 		logger.debug(dbgOut);
 	}
 	
@@ -110,7 +113,7 @@ import net.bobs.own.db.h2.resources.Messages;
 	 */
 
 	@Override
-	public void close() {
+	public void closePool() {
 
 		ds.close();
 		

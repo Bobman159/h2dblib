@@ -50,13 +50,13 @@ public class H2ConnectionPoolFactory {
 		
 		switch (type) {
 			case HIKARICP:
-			   dbProps = createProperties(type,dbPath,userId,password,numberConnections);
-				pool = new H2HikariConnectionPool(dbProps);
+			   dbProps = createProperties(type,dbPath,userId,password,numberConnections,poolId);
+				pool = new H2HikariConnectionPool(dbProps,poolId);
 				poolMap.put(poolId,pool);
 				logger.debug("HikariConnectionPool with poolid= " + poolId + " added to connection pool map");
 				break;
 			case MYOWN:
-			   dbProps = createProperties(type,dbPath,userId,password,numberConnections);
+			   dbProps = createProperties(type,dbPath,userId,password,numberConnections,poolId);
 			   pool = new H2MyOwnConnectionPool(dbProps);
 			   poolMap.put(poolId, pool);
 				logger.debug("H2MyOwnConnectionPool with poolid= " + poolId + " added to connection pool map");
@@ -84,7 +84,7 @@ public class H2ConnectionPoolFactory {
 
 		switch (type) {
 			case HIKARICP:
-				pool = new H2HikariConnectionPool(propFile);
+				pool = new H2HikariConnectionPool(propFile,poolId);
 	         poolMap.put(poolId,pool);
 				logger.debug("HikariConnectionPool with poolid= " + poolId + " added to connection pool map");
 				break;
@@ -142,7 +142,7 @@ public class H2ConnectionPoolFactory {
 	}
 	
 	private Properties createProperties(PoolTypes type,String dbPath, String userId,String password,
-	                                    String numberConnections ) {
+	                                    String numberConnections, String poolId) {
 	   
 	   logger.debug("Create configuration using properties object");
 	   Properties prop = new Properties();
@@ -164,6 +164,7 @@ public class H2ConnectionPoolFactory {
    	      if (password != null) {
    	         prop.put("db.password",password);
    	      }
+   	      prop.put("db.poolid",poolId);
    	      break;
 	   }
 	   

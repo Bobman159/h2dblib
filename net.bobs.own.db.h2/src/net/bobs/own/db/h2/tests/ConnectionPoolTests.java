@@ -1,7 +1,5 @@
 package net.bobs.own.db.h2.tests;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -93,17 +91,17 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
          Connection connPoola = pool.getConnection();
          Assertions.assertNotNull(connPool,"connPool connection is NULL");
          Assertions.assertNotNull(connPoola,"connPoola connection is NULL");
-         pool2.closeConnection(connPool);
-         pool2.closeConnection(connPoola);
-         pool2.close();
+         pool2.releaseConnection(connPool);
+         pool2.releaseConnection(connPoola);
+         pool2.closePool();
          
          Connection connPool2 = pool2.getConnection();
          Assertions.assertNotNull(connPool2,"connPool2 connection is NULL");
          Connection connPool2a = pool2.getConnection();
          Assertions.assertNotNull(connPool2a,"connPool2a connection is NULL");
-         pool2.closeConnection(connPool2);
-         pool2.closeConnection(connPool2a);
-         pool2.close();
+         pool2.releaseConnection(connPool2);
+         pool2.releaseConnection(connPool2a);
+         pool2.closePool();
       } catch (SQLException sqlex) {
          logger.error(sqlex.getMessage(), sqlex);
       }
@@ -126,17 +124,17 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
          Connection connPoola = pool.getConnection();
          Assertions.assertNotNull(connPool,"connPool connection is NULL");
          Assertions.assertNotNull(connPoola,"connPoola connection is NULL");
-         pool2.closeConnection(connPool);
-         pool2.closeConnection(connPoola);
-         pool2.close();
+         pool2.releaseConnection(connPool);
+         pool2.releaseConnection(connPoola);
+         pool2.closePool();
          
          Connection connPool2 = pool2.getConnection();
          Assertions.assertNotNull(connPool2,"connPool2 connection is NULL");
          Connection connPool2a = pool2.getConnection();
          Assertions.assertNotNull(connPool2a,"connPool2a connection is NULL");
-         pool2.closeConnection(connPool2);
-         pool2.closeConnection(connPool2a);
-         pool2.close();
+         pool2.releaseConnection(connPool2);
+         pool2.releaseConnection(connPool2a);
+         pool2.closePool();
       } catch (SQLException sqlex) {
          logger.error(sqlex.getMessage(), sqlex);
       }
@@ -161,17 +159,17 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
       Connection connPoola = pool.getConnection();
       Assertions.assertNotNull(connPool,"connPool connection is NULL");
       Assertions.assertNotNull(connPoola,"connPoola connection is NULL");
-      pool.closeConnection(connPool);
-      pool.closeConnection(connPoola);
-      pool.close();
+      pool.releaseConnection(connPool);
+      pool.releaseConnection(connPoola);
+      pool.closePool();
       
       Connection connPool2 = pool2.getConnection();
       Assertions.assertNotNull(connPool2,"connPool2 connection is NULL");
       Connection connPool2a = pool2.getConnection();
       Assertions.assertNotNull(connPool2a,"connPool2a connection is NULL");
-      pool2.closeConnection(connPool2);
-      pool2.closeConnection(connPool2a);
-      pool2.close();
+      pool2.releaseConnection(connPool2);
+      pool2.releaseConnection(connPool2a);
+      pool2.closePool();
       } catch (SQLException sqlex) {
       logger.error(sqlex.getMessage(), sqlex);
       }
@@ -200,17 +198,17 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
          Connection connPoola = pool.getConnection();
          Assertions.assertNotNull(connPool,"connPool connection is NULL");
          Assertions.assertNotNull(connPoola,"connPoola connection is NULL");
-         pool.closeConnection(connPool);
-         pool.closeConnection(connPoola);
-         pool.close();
+         pool.releaseConnection(connPool);
+         pool.releaseConnection(connPoola);
+         pool.closePool();
          
          Connection connPool2 = pool2.getConnection();
          Assertions.assertNotNull(connPool2,"connPool2 connection is NULL");
          Connection connPool2a = pool2.getConnection();
          Assertions.assertNotNull(connPool2a,"connPool2a connection is NULL");
-         pool2.closeConnection(connPool2);
-         pool2.closeConnection(connPool2a);
-         pool2.close();
+         pool2.releaseConnection(connPool2);
+         pool2.releaseConnection(connPool2a);
+         pool2.closePool();
       } catch (SQLException sqlex) {
          logger.error(sqlex.getMessage(), sqlex);
       }
@@ -234,17 +232,17 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
          Connection connPoola = pool.getConnection();
          Assertions.assertNotNull(connPool,"connPool connection is NULL");
          Assertions.assertNotNull(connPoola,"connPoola connection is NULL");
-         pool.closeConnection(connPool);
-         pool.closeConnection(connPoola);
-         pool.close();
+         pool.releaseConnection(connPool);
+         pool.releaseConnection(connPoola);
+         pool.closePool();
          
          Connection connPool2 = pool2.getConnection();
          Assertions.assertNotNull(connPool2,"connPool2 connection is NULL");
          Connection connPool2a = pool2.getConnection();
          Assertions.assertNotNull(connPool2a,"connPool2a connection is NULL");
-         pool2.closeConnection(connPool2);
-         pool2.closeConnection(connPool2a);
-         pool2.close();
+         pool2.releaseConnection(connPool2);
+         pool2.releaseConnection(connPool2a);
+         pool2.closePool();
       } catch (SQLException sqlex) {
          logger.error(sqlex.getMessage(), sqlex);
       }
@@ -269,17 +267,17 @@ import net.bobs.own.db.h2.pool.IH2ConnectionPool;
       Connection connPoola = pool.getConnection();
       Assertions.assertNotNull(connPool,"connPool connection is NULL");
       Assertions.assertNotNull(connPoola,"connPoola connection is NULL");
-      pool.closeConnection(connPool);
-      pool.closeConnection(connPoola);
-      pool.close();
+      pool.releaseConnection(connPool);
+      pool.releaseConnection(connPoola);
+      pool.closePool();
       
       Connection connPool2 = pool2.getConnection();
       Assertions.assertNotNull(connPool2,"connPool2 connection is NULL");
       Connection connPool2a = pool2.getConnection();
       Assertions.assertNotNull(connPool2a,"connPool2a connection is NULL");
-      pool2.closeConnection(connPool2);
-      pool2.closeConnection(connPool2a);
-      pool2.close();
+      pool2.releaseConnection(connPool2);
+      pool2.releaseConnection(connPool2a);
+      pool2.closePool();
       } catch (SQLException sqlex) {
       logger.error(sqlex.getMessage(), sqlex);
       }
