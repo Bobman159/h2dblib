@@ -173,7 +173,7 @@ class H2MyOwnConnectionPool extends Thread implements IH2ConnectionPool {
        * connections to the available connections list.
        */
 
-      final String DEBUG_OUT = "Close connection available= {0} inuse= {1}";
+      final String DEBUG_OUT = "poolid {0} close connection available= {1} inuse= {2}";
       String dbgOut = " ";
 
       if (conn != null) {

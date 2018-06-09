@@ -99,7 +99,7 @@ public abstract class H2AbstractDatabaseService {
 //			conn = getConnection();
 //		}
 	   
-		conn = pool.getConnection();
+//		conn = pool.getConnection();
 		prep = conn.prepareStatement(sqlText);
 	}
 	
@@ -306,6 +306,7 @@ public abstract class H2AbstractDatabaseService {
 	 * @param clob
 	 */
 	public void freeClob(Clob clob) {
+
 	   try {
          clob.free();
       } catch (SQLException sqlex) {
