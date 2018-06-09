@@ -82,6 +82,7 @@ class H2MyOwnConnectionPool extends Thread implements IH2ConnectionPool {
    private H2ConnectionPoolPreferences prefs = null;
    private int max_connections;
    private String poolId = null;
+   private boolean poolTracing = false;
    
    /**
     * Creates a connection pool using the database preferences identified by a key
@@ -133,23 +134,17 @@ class H2MyOwnConnectionPool extends Thread implements IH2ConnectionPool {
       String dbgOut = " ";
 
       if (available_connections.size() == 0) {
-         // try {
          conn = createConnection(buildURL());
-         // } catch (NoPreferenceException npex) {
-         // Only log the error since the preference specifications is the responsibility
-         // of the developer
-         // logger.debug(npex.getMessage(), npex);
-         // }
          available_connections.add(conn);
          dbgOut = MessageFormat.format(DEBUG_STATUS, poolId, available_connections.size(),   
                                        inuse_connections.size());
-         logger.debug(dbgOut);
+         logConnectionTrace(dbgOut);
       } else {
          conn = available_connections.remove(available_connections.size() - 1);
          inuse_connections.add(conn);
          dbgOut = MessageFormat.format(DEBUG_STATUS, poolId, available_connections.size(), 
                                        inuse_connections.size());
-         logger.debug(dbgOut);
+         logConnectionTrace(dbgOut);
       }
 
       return conn;
@@ -181,7 +176,7 @@ class H2MyOwnConnectionPool extends Thread implements IH2ConnectionPool {
             inuse_connections.remove(conn);
          }
          if (available_connections.contains(conn) == false) {
-            logger.debug("poolId " + poolId + " release connections addded connection");
+            logConnectionTrace("poolId " + poolId + " release connections addded connection");
             
             // dbgOut = MessageFormat.format(DEBUG_OUT, available_connections.size(),
             // inuse_connections.size());
@@ -189,7 +184,7 @@ class H2MyOwnConnectionPool extends Thread implements IH2ConnectionPool {
          }
          dbgOut = MessageFormat.format(DEBUG_OUT, poolId, available_connections.size(), 
                                        inuse_connections.size());
-         logger.debug(dbgOut);
+         logConnectionTrace(dbgOut);
       }
    }
 
@@ -338,7 +333,7 @@ class H2MyOwnConnectionPool extends Thread implements IH2ConnectionPool {
          for(int ix = 0;ix<max_connections;ix++) {
             available_connections.add(createConnection(buildURL()));
          }
-         logger.debug("There are " + available_connections.size() + 
+         logConnectionTrace("There are " + available_connections.size() + 
                       " available connections using the jdbc url " + url);
       } catch (SQLException | NoPreferenceException ex) {
          logger.debug(ex.getMessage(), ex);
@@ -369,6 +364,27 @@ class H2MyOwnConnectionPool extends Thread implements IH2ConnectionPool {
             
          return url;
           
+   }
+   
+   /**
+    * Set indicator for whether connections pool trace information should be logged when connections 
+    * are obtained and released.  Logging shows 1) the total number of available connections, 2) the
+    * number of active connections and 3) number of idle connections. Connection tracing is off by default.
+    * 
+    * @param - trace indicator true turns connection tracing on, false turns connection tracing off.
+    *  
+    */
+   @Override 
+   public void setPoolConnectionTrace(boolean trace) {
+      this.poolTracing = trace;
+   }
+   
+   private void logConnectionTrace(String msg) {
+      
+      if (poolTracing) {
+         logger.debug(msg);
+      }
+      
    }
          
 }

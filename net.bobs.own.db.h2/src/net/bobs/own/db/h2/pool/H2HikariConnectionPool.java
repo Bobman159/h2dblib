@@ -19,6 +19,7 @@ import net.bobs.own.db.h2.resources.Messages;
 	private Logger logger = LogManager.getLogger(H2HikariConnectionPool.class);
 	private HikariDataSource ds;
 	private String poolId = null;
+	private boolean poolTracing = false;
 
 	/**
 	 * Creates a HikariCP backed connection pool using a properties file. 
@@ -72,7 +73,7 @@ import net.bobs.own.db.h2.resources.Messages;
 			HikariPoolMXBean bean = ds.getHikariPoolMXBean();
 			dbgOut = MessageFormat.format(DEBUG_STATUS,poolId, bean.getTotalConnections(),
 					                        bean.getActiveConnections(),bean.getIdleConnections());			
-			logger.debug(dbgOut);
+			logConnectionTrace(dbgOut);
 		}
 		catch (SQLException sqlex) {
          logger.error(sqlex.getMessage(), sqlex);
@@ -102,7 +103,7 @@ import net.bobs.own.db.h2.resources.Messages;
 		HikariPoolMXBean bean = ds.getHikariPoolMXBean();
 		dbgOut = MessageFormat.format(DEBUG_STATUS,poolId,bean.getTotalConnections(),
 				                        bean.getActiveConnections(),bean.getIdleConnections());			
-		logger.debug(dbgOut);
+		logConnectionTrace(dbgOut);
 	}
 	
 	/**
@@ -118,5 +119,27 @@ import net.bobs.own.db.h2.resources.Messages;
 		ds.close();
 		
 	}
+	
+	/**
+	 * Set indicator for whether connections pool trace information should be logged when connections 
+	 * are obtained and released.  Logging shows 1) the total number of available connections, 2) the
+	 * number of active connections and 3) number of idle connections. Connection tracing is off by default.
+	 * 
+	 * @param - trace indicator true turns connection tracing on, false turns connection tracing off.
+	 *  
+	 */
+	@Override 
+	public void setPoolConnectionTrace(boolean trace) {
+	   this.poolTracing = trace;
+	}
+	
+	private void logConnectionTrace(String msg) {
+	   
+	   if (poolTracing) {
+	      logger.debug(msg);
+	   }
+	   
+	}
+	
 
 }
