@@ -130,6 +130,21 @@ import net.bobs.own.db.h2.resources.Messages;
 
 	}
 	
+	/**
+	 * Returns an indication of if the h2 database connection pool tracing is on or off
+	 * 
+	 * @return - true if tracing is on, false otherwise
+	 * @throws NoPreferenceException
+	 */
+	public boolean getdbTrace() throws NoPreferenceException {
+	   boolean trace = false;
+	   checkPropertyExist("db.trace");
+	   if (prefs.getProperty("db.trace").equalsIgnoreCase("true")) {
+	      trace = true;
+	   }
+	   return trace;
+	}
+	
 	private void checkPropertyExist(String propKey) throws NoPreferenceException {
 		if (prefs.containsKey(propKey) == false) {
 			throw new NoPreferenceException(Messages.bind(Messages.errormsg_noproperty_exist,propKey));

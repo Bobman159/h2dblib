@@ -18,6 +18,8 @@ import net.bobs.own.db.h2.resources.Messages;
 		
 	private Logger logger = LogManager.getLogger(H2HikariConnectionPool.class);
 	private HikariDataSource ds;
+	private String poolId = null;
+	private boolean poolTracing = false;
 
 	/**
 	 * Creates a HikariCP backed connection pool using a properties file. 
@@ -25,7 +27,7 @@ import net.bobs.own.db.h2.resources.Messages;
 	 * @param prefKey - identifier for the database preferences to use
 	 */
 
-	public H2HikariConnectionPool(String path)  {
+	public H2HikariConnectionPool(String path,String poolId)  {
 		
 		logger.debug(Messages.bind(Messages.HikariInitPool_Message, "properties file", path));
 		String config_path = path;
@@ -33,6 +35,7 @@ import net.bobs.own.db.h2.resources.Messages;
 		HikariConfig config = null;
 		config = new HikariConfig(config_path);
 		ds = new HikariDataSource(config);
+		this.poolId = poolId;
 	}
 	
 	/**
@@ -40,11 +43,12 @@ import net.bobs.own.db.h2.resources.Messages;
 	 * 
 	 * @param prop - properties of object of HikariCP configuration information
 	 */
-//	public H2HikariConnectionPool(Properties prop) {
-//		
-//		HikariConfig config = new HikariConfig(prop);
-//		ds = new HikariDataSource(config);
-//	}
+	public H2HikariConnectionPool(Properties prop,String poolId) {
+		
+		HikariConfig config = new HikariConfig(prop);
+		ds = new HikariDataSource(config);
+		this.poolId = poolId;
+	}
 	
 	/**
 	 * Creates a connection pool for the specified database path, user id 
@@ -61,15 +65,15 @@ import net.bobs.own.db.h2.resources.Messages;
 	public Connection getConnection() throws SQLException {
 
 		Connection conn = null;
-		final String DEBUG_STATUS="Get connection total= {0} active= {1} idle= {2}";
+		final String DEBUG_STATUS="PoolId {0} get connection total= {2} active= {2} idle= {3}";
 		String dbgOut = " ";
 		
 		try {			
 			conn = ds.getConnection();
 			HikariPoolMXBean bean = ds.getHikariPoolMXBean();
-			dbgOut = MessageFormat.format(DEBUG_STATUS,bean.getTotalConnections(),
-					bean.getActiveConnections(),bean.getIdleConnections());			
-			logger.debug(dbgOut);
+			dbgOut = MessageFormat.format(DEBUG_STATUS,poolId, bean.getTotalConnections(),
+					                        bean.getActiveConnections(),bean.getIdleConnections());			
+			logConnectionTrace(dbgOut);
 		}
 		catch (SQLException sqlex) {
          logger.error(sqlex.getMessage(), sqlex);
@@ -90,16 +94,16 @@ import net.bobs.own.db.h2.resources.Messages;
 	 * @param conn - the <code>Connection</code> to be returned
 	 */
 	@Override
-	public synchronized void closeConnection(Connection conn) throws SQLException {
+	public synchronized void releaseConnection(Connection conn) throws SQLException {
 		
-		final String DEBUG_STATUS="Close connection total= {0} active= {1} idle= {2}";
+		final String DEBUG_STATUS="PoolId {0} close connection total= {1} active= {2} idle= {3}";
 		String dbgOut = " ";
 		
 		conn.close();
 		HikariPoolMXBean bean = ds.getHikariPoolMXBean();
-		dbgOut = MessageFormat.format(DEBUG_STATUS,bean.getTotalConnections(),
-				bean.getActiveConnections(),bean.getIdleConnections());			
-		logger.debug(dbgOut);
+		dbgOut = MessageFormat.format(DEBUG_STATUS,poolId,bean.getTotalConnections(),
+				                        bean.getActiveConnections(),bean.getIdleConnections());			
+		logConnectionTrace(dbgOut);
 	}
 	
 	/**
@@ -110,10 +114,32 @@ import net.bobs.own.db.h2.resources.Messages;
 	 */
 
 	@Override
-	public void close() {
+	public void closePool() {
 
 		ds.close();
 		
 	}
+	
+	/**
+	 * Set indicator for whether connections pool trace information should be logged when connections 
+	 * are obtained and released.  Logging shows 1) the total number of available connections, 2) the
+	 * number of active connections and 3) number of idle connections. Connection tracing is off by default.
+	 * 
+	 * @param - trace indicator true turns connection tracing on, false turns connection tracing off.
+	 *  
+	 */
+	@Override 
+	public void setPoolConnectionTrace(boolean trace) {
+	   this.poolTracing = trace;
+	}
+	
+	private void logConnectionTrace(String msg) {
+	   
+	   if (poolTracing) {
+	      logger.debug(msg);
+	   }
+	   
+	}
+	
 
 }

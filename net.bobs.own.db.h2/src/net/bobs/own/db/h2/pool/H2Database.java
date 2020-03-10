@@ -38,7 +38,6 @@ public class H2Database extends H2AbstractDatabaseService {
 	   super(pool);
 	}
 
-
 //	@Override
 //	public IH2ConnectionPool getPool(String poolId) {
 //		return H2PoolController.getPool(poolId);

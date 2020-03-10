@@ -6,7 +6,8 @@ import java.sql.SQLException;
 public interface IH2ConnectionPool {
 
 	public Connection getConnection() throws SQLException;
-	public void closeConnection(Connection conn) throws SQLException;
-	public void close();
+	public void releaseConnection(Connection conn) throws SQLException;
+	public void closePool();
+	public void setPoolConnectionTrace(boolean trace);
 	
 }

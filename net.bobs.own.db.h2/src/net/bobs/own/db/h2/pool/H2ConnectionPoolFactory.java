@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +19,8 @@ public class H2ConnectionPoolFactory {
 	
 	/**
 	 * Obtain the instance of the connection pool factory.
-	 * @return
+	 * 
+	 * @return - the connection pool factory
 	 */
 	static public H2ConnectionPoolFactory getInstance() {
 	   if (factory == null) {
@@ -29,25 +31,34 @@ public class H2ConnectionPoolFactory {
 	
 	
 	/**
-	 * Define a connection pool using a <code>Properties</code> object with configuration information.
-	 * @param type - connection pool type 
+	 * Define a connection pool using the specified information for configuration. 
+	 * <b>Do not specify the file extension <code>.h2.db</code> for the dbPath parameter.</b>
+	 * It will result in database not found messages in h2 1.3.176.
+	 * 
+	 * @param type - type of pool HIKARICP or MYOWN
+	 * @param dbPath - full path to the specified H2 database 
+	 * @param userId - the user Id for logon information
+	 * @param password - password for the user Id, null if no password
+	 * @param numberConnections - the number of connections to be defined in the pool
 	 * @param poolId - unique identifier for the pool being created
-	 * @param props - property object for configuration
 	 */
-	 public IH2ConnectionPool makePool(PoolTypes type, String resourcePath,
+	 public IH2ConnectionPool makePool(PoolTypes type, String dbPath,
 	                            String userId, String password, String numberConnections,String poolId) {
 	
 		IH2ConnectionPool pool = null;
+		Properties dbProps = null;
 		
 		switch (type) {
 			case HIKARICP:
-				pool = new H2HikariConnectionPool(resourcePath);
-//				H2PoolController.addPool(pool, poolId);
+			   dbProps = createProperties(type,dbPath,userId,password,numberConnections,poolId);
+				pool = new H2HikariConnectionPool(dbProps,poolId);
+				poolMap.put(poolId,pool);
 				logger.debug("HikariConnectionPool with poolid= " + poolId + " added to connection pool map");
 				break;
 			case MYOWN:
-			   pool = makeMyOwnConnectionPool(resourcePath);
-//				H2PoolController.addPool(pool, poolId);
+			   dbProps = createProperties(type,dbPath,userId,password,numberConnections,poolId);
+			   pool = new H2MyOwnConnectionPool(dbProps);
+			   poolMap.put(poolId, pool);
 				logger.debug("H2MyOwnConnectionPool with poolid= " + poolId + " added to connection pool map");
 				break;
 		}
@@ -55,20 +66,31 @@ public class H2ConnectionPoolFactory {
 		return pool;
 
 	}
-	
-	public IH2ConnectionPool makePool(PoolTypes type, String poolId, String path)  {
+
+	 /**
+	  * Create a connection pool using a .properties file with the necessary information for defining the pool.
+	  * 
+	  * @param type - type of pool HIKARICP or MYOWN
+	  * @param poolId - unique identifier for the pool
+	  * @param propFile - full path to .properties file.
+	  * 
+	  * For .properties file parameters, see the Usage section of the README.md file.
+	  * 
+	  * @return - an <code>IH2ConnectionPool</code> pool
+	  */
+	public IH2ConnectionPool makePool(PoolTypes type, String poolId, String propFile)  {
 		
 		IH2ConnectionPool pool = null;
 
 		switch (type) {
 			case HIKARICP:
-				pool = new H2HikariConnectionPool(path);
-//				H2PoolController.addPool(pool, poolId);
+				pool = new H2HikariConnectionPool(propFile,poolId);
+	         poolMap.put(poolId,pool);
 				logger.debug("HikariConnectionPool with poolid= " + poolId + " added to connection pool map");
 				break;
 			case MYOWN:
-   			pool = makeMyOwnConnectionPool(path);
-//			   H2PoolController.addPool(pool, poolId);
+   			pool = makeMyOwnConnectionPool(propFile);
+            poolMap.put(poolId,pool);
 				logger.debug("H2MyOwnConnectionPool with poolid= " + poolId + " added to connection pool map");
 				break;
 		}
@@ -76,6 +98,13 @@ public class H2ConnectionPoolFactory {
 		return pool;
 	}
 	
+	/**
+	 * Locate an <code>IH2ConnectionPool</code> object for the specified poolId.  
+	 *   
+	 * @param poolId - unique identifier for a <code>IH2ConnectionPool</code> 
+	 * 
+	 * @return - the connection pool object if created, null if no pool was found for the poolId
+	 */
 	public IH2ConnectionPool findPool(String poolId) {
 	   
 	   IH2ConnectionPool pool = null;
@@ -110,6 +139,37 @@ public class H2ConnectionPoolFactory {
       
       return pool;
       
+	}
+	
+	private Properties createProperties(PoolTypes type,String dbPath, String userId,String password,
+	                                    String numberConnections, String poolId) {
+	   
+	   logger.debug("Create configuration using properties object");
+	   Properties prop = new Properties();
+	   switch (type) {
+   	   case HIKARICP:
+   	      prop.put("dataSourceClassName", "org.h2.jdbcx.JdbcDataSource");
+   	      prop.put("dataSource.url","jdbc:h2:" + dbPath);
+   	      prop.put("dataSource.user",userId);
+   	      if (password != null) {
+   	           prop.put("dataSource.password",password);
+   	      }
+   	      prop.put("maximumPoolSize",numberConnections);
+   	      break;
+   	   case MYOWN:
+   	      
+   	      prop.put("db.maxconnections",numberConnections);
+   	      prop.put("db.path",dbPath);
+   	      prop.put("db.user",userId);
+   	      if (password != null) {
+   	         prop.put("db.password",password);
+   	      }
+   	      prop.put("db.poolid",poolId);
+   	      break;
+	   }
+	   
+	   return prop;
+	   
 	}
 
 	
